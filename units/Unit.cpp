@@ -1,6 +1,6 @@
 #include "Unit.h"
 
-Unit::Unit(State* state, BaseAttack* attack) {
+Unit::Unit(BaseState* state, BaseAttack* attack) {
     this->uState = state;
     this->uAttack = attack;
     this->isObserved = false;
@@ -21,7 +21,7 @@ Unit::Unit(Unit* u) {
     this->isUndead = u->getIsUndead();
 }
 
-void Unit::changeState(State* changeOn) {
+void Unit::changeState(BaseState* changeOn) {
     this->uState->setMaxHp(changeOn->getMaxHp());
     this->uState->setDMG(changeOn->getDMG());
     this->uState->setName(*(changeOn->getName()));
@@ -35,21 +35,6 @@ void Unit::changeAttack(BaseAttack* changeOn) {
     this->uAttack = changeOn;
 }
 
-void Unit::becomeObservedBy(Unit* observer) {
-    this->isObserved = true;
-    this->observer = observer;
-}
-
-void Unit::giveHp() {
-    if ( isObserved == true ) {
-        if ( (observer->getState()->getHp() + this->getState()->getMaxHp() / 5 ) > observer->getState()->getMaxHp() ) {
-            observer->getState()->setHp(observer->getState()->getMaxHp());
-        } else {
-            observer->getState()->setHp(observer->getState()->getHp() + ( this->getState()->getMaxHp() / 5 ) );
-        }
-    }
-}
-
 void Unit::attack(Unit* enemy) {
     this->uAttack->attack(enemy, this);
 };
@@ -59,10 +44,6 @@ void Unit::counterAttack(Unit* enemy) {
 };
 
 void Unit::takeDamage(int damage) {
-    if ( damage >= this->getState()->getHp() ) {
-        this->giveHp();
-    }
-
     this->uState->takeDamage(damage);
 };
 
@@ -70,7 +51,7 @@ BaseAttack* Unit::getAttack() const {
     return this->uAttack;
 }
 
-State* Unit::getState() const { 
+BaseState* Unit::getState() const { 
     return this->uState; 
 }
 
